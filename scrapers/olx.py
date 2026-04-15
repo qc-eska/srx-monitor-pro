@@ -1,7 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 
-URL = "https://www.olx.pl/motoryzacja/samochody/q-srx/"
+urls = [
+    "https://www.olx.pl/motoryzacja/samochody/q-cadillac-srx/",
+    "https://www.olx.pl/motoryzacja/samochody/q-honda-element/"
+]
 
 def fetch_olx():
     headers = {
