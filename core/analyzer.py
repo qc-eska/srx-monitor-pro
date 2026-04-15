@@ -13,16 +13,18 @@ def extract_year(text: str):
 def is_valid_srx(item):
     text = (item.get("title", "") + " " + item.get("url", "")).lower()
 
-    # blokada SRX II
+    # blokada SRX II (pewna)
     if any(x in text for x in ["2010", "2011", "2012", "2013"]):
         return False
 
     year = extract_year(text)
 
-    if year:
-        return ALLOWED_MIN_YEAR <= year <= ALLOWED_MAX_YEAR
+    # 🔥 KLUCZOWA ZMIANA:
+    # jeśli NIE ma roku → NIE blokujemy
+    if year is None:
+        return True
 
-    return False
+    return ALLOWED_MIN_YEAR <= year <= ALLOWED_MAX_YEAR
 
 
 def analyze_listings(listings):
@@ -34,7 +36,6 @@ def analyze_listings(listings):
         if not url:
             continue
 
-        # 🔥 KLUCZ: anti-duplicate
         if is_seen(url):
             continue
 
