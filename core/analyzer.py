@@ -11,13 +11,12 @@ def analyze_listings(listings):
         if not url:
             continue
 
-        # 🔥 anti-duplicate
         if is_seen(url):
             continue
 
         text = item.get("title", "") + " " + url
 
-        # 🔥 global SRX filter
+        # 🔥 GLOBAL FILTER
         if not is_valid_srx(text):
             continue
 
