@@ -1,10 +1,13 @@
-from scrapers.olx import fetch_olx
-from scrapers.otomoto import fetch_otomoto
 from telegram.bot import send_alert
-from core.analyzer import analyze_listings
 import time
 
-def run():from telegram.bot import send_alert
+def run():
+    send_alert("🚗 TEST: SRX monitor działa 24/7")
+    print("TEST sent to Telegram")
 
-send_alert("✅ TEST: SRX monitor działa 24/7")
+    while True:
+        print("Scan done... waiting 30 min")
+        time.sleep(1800)
+
+if __name__ == "__main__":
     run()
