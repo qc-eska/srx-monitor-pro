@@ -22,6 +22,7 @@ def run():
             listings += fetch_otomoto()
             listings += fetch_autoplac()
             listings += fetch_sprzedajemy()
+            print("TOTAL:", len(listings))
 
             # 🧠 FIRST RUN = tylko zapis, bez alertów
             if FIRST_RUN:
