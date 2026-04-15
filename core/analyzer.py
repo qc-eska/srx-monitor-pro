@@ -1,5 +1,5 @@
 from database.db import is_seen, mark_seen
-from core.filters import is_valid_srx
+from core.filters import is_valid_listing
 
 
 def analyze_listings(listings):
@@ -16,14 +16,13 @@ def analyze_listings(listings):
 
         text = item.get("title", "") + " " + url
 
-        # 🔥 GLOBAL FILTER
-        if not is_valid_srx(text):
+        if not is_valid_listing(text):
             continue
 
         mark_seen(url)
 
         alerts.append(
-            f"🚗 SRX 2004–2009\n{item.get('title')}\n{item.get('price')}\n{url}"
+            f"🚗 MATCH\n{item.get('title')}\n{item.get('price')}\n{url}"
         )
 
     return alerts
