@@ -1,5 +1,7 @@
 from scrapers.olx import fetch_olx
 from scrapers.otomoto import fetch_otomoto
+from scrapers.autoplac import fetch_autoplac
+from scrapers.sprzedajemy import fetch_sprzedajemy
 from core.analyzer import analyze_listings
 from telegram.bot import send_alert
 import time
@@ -18,6 +20,8 @@ def run():
 
             listings += fetch_olx()
             listings += fetch_otomoto()
+            listings += fetch_autoplac()
+            listings += fetch_sprzedajemy()
 
             # 🧠 FIRST RUN = tylko zapis, bez alertów
             if FIRST_RUN:
