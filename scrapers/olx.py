@@ -23,7 +23,6 @@ def fetch_olx():
                 "title": title.text.strip(),
                 "price": price.text.strip() if price else "brak",
                 "url": "https://www.olx.pl" + link["href"],
-                "new": True
             })
 
     return listings
