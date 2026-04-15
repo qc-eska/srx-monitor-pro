@@ -4,20 +4,7 @@ from telegram.bot import send_alert
 from core.analyzer import analyze_listings
 import time
 
-def run():
-    while True:
-        listings = []
+def run():from telegram.bot import send_alert
 
-        listings += fetch_olx()
-        listings += fetch_otomoto()
-
-        alerts = analyze_listings(listings)
-
-        for alert in alerts:
-            send_alert(alert)
-
-        print("Scan done... waiting 30 min")
-        time.sleep(1800)
-
-if __name__ == "__main__":
+send_alert("✅ TEST: SRX monitor działa 24/7")
     run()
