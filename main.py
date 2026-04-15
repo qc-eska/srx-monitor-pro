@@ -22,11 +22,6 @@ def run():
 
             print("TOTAL:", len(listings))
 
-            # 🧠 BOOTSTRAP LOGIC (TYLKO RAZ - PIERWSZE WIDZENIE)
-            for item in listings:
-                if item.get("url"):
-                    mark_seen(item["url"])
-
             alerts = analyze_listings(listings)
 
             for alert in alerts:
