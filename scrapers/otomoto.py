@@ -23,7 +23,6 @@ def fetch_otomoto():
                 "title": title.text.strip(),
                 "price": price.text.strip() if price else "brak",
                 "url": link["href"],
-                "new": True
             })
 
     return listings
