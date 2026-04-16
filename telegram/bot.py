@@ -1,7 +1,20 @@
-import telebot
-from config import TELEGRAM_TOKEN, CHAT_ID
+import requests
+import os
 
-bot = telebot.TeleBot(TELEGRAM_TOKEN)
+TOKEN = os.getenv("TELEGRAM_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
-def send_alert(message: str):
-    bot.send_message(CHAT_ID, message)
+BASE_URL = f"https://api.telegram.org/bot{TOKEN}"
+
+
+def send_message(text):
+    if not TOKEN or not CHAT_ID:
+        print("Missing TELEGRAM_TOKEN or CHAT_ID")
+        return
+
+    url = f"{BASE_URL}/sendMessage"
+
+    requests.post(url, json={
+        "chat_id": CHAT_ID,
+        "text": text
+    })
