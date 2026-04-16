@@ -1,4 +1,5 @@
 FORCE_RESEND_ONCE = True
+
 from scrapers.olx import fetch_olx
 from scrapers.otomoto import fetch_otomoto
 from scrapers.autoplac import fetch_autoplac
@@ -10,6 +11,8 @@ import time
 
 
 def run():
+    global FORCE_RESEND_ONCE
+
     send_message("🚗 SRX monitor uruchomiony (PRO 24/7)")
 
     while True:
@@ -23,32 +26,30 @@ def run():
 
             print("TOTAL:", len(listings))
 
-           global FORCE_RESEND_ONCE
+            # 🔥 TRYB JEDNORAZOWEGO RESEND
+            if FORCE_RESEND_ONCE:
+                print("🔥 FORCE RESEND ACTIVE")
 
-if FORCE_RESEND_ONCE:
-    print("🔥 FORCE RESEND ACTIVE")
+                for item in listings:
+                    url = item.get("url")
 
-    for item in listings:
-        url = item.get("url")
+                    if not url:
+                        continue
 
-        if not url:
-            continue
+                    send_message(
+                        f"🔁 RESEND\n{item.get('title')}\n{item.get('price')}\n{url}"
+                    )
 
-        send_alert(
-            f"🔁 RESEND\n{item.get('title')}\n{item.get('price')}\n{url}"
-        )
+                    # oznacz jako seen
+                    mark_seen(url)
 
-        # 🔥 oznacz jako seen żeby nie wróciło
-        from database.db import mark_seen
-        mark_seen(url)
+                FORCE_RESEND_ONCE = False
 
-    FORCE_RESEND_ONCE = False
+            else:
+                alerts = analyze_listings(listings)
 
-else:
-    alerts = analyze_listings(listings)
-
-    for alert in alerts:
-        send_alert(alert)
+                for alert in alerts:
+                    send_message(alert)
 
             print(f"Scan done: {len(listings)} listings")
 
