@@ -20,6 +20,10 @@ def fetch_sprzedajemy():
             href = item.get("href", "")
             text = item.get_text(" ", strip=True)
 
+            # 🔥 KLUCZ: tylko realne ogłoszenia
+            if "/oferta/" not in href and "/ogloszenie/" not in href:
+                continue
+
             if href and text:
                 listings.append({
                     "title": text,
