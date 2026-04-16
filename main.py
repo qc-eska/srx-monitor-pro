@@ -1,4 +1,4 @@
-FORCE_RESEND_ONCE = True
+FORCE_RESEND_ONCE = False
 
 from scrapers.olx import fetch_olx
 from scrapers.otomoto import fetch_otomoto
