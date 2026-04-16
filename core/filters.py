@@ -1,58 +1,26 @@
-import re
-
-
-def extract_year(text: str):
-    match = re.search(r"(20\d{2})", text or "")
-    return int(match.group(1)) if match else None
-
-
-def is_valid_srx(text: str):
+def is_valid_srx(text: str) -> bool:
     text = (text or "").lower()
 
-    blacklist = [
-        "2010", "2011", "2012", "2013", "2014", "2015", "2016",
-        "3.0",
-        "3.6"
+    # MUST HAVE
+    if "srx" not in text:
+        return False
+
+    # BLOCKLIST (tu masz Ford C-Max fix)
+    blocklist = [
+        "c-max",
+        "c max",
+        "focus",
+        "fiesta",
+        "mondeo",
+        "escort",
+        "ka",
+        "kuga",
+        "s-max",
+        "s max"
     ]
 
-    if any(x in text for x in blacklist):
-        return False
-
-    if "4.6" in text:
-        return True
-
-    year = extract_year(text)
-
-    if year:
-        return 2004 <= year <= 2009
-
-    return False
-
-
-def is_valid_element(text: str):
-    text = (text or "").lower()
-
-    if "element" not in text:
-        return False
-
-    if "honda" not in text:
-        return False
-
-    # Element był tylko benzynowy → ale filtrujemy podejrzane wpisy
-    blacklist = [
-        "diesel",
-        "2.2 cdti",
-        "cr-v element"
-    ]
-
-    if any(x in text for x in blacklist):
-        return False
+    for b in blocklist:
+        if b in text:
+            return False
 
     return True
-
-
-def is_valid_listing(text: str):
-    return (
-        is_valid_srx(text)
-        or is_valid_element(text)
-    )
