@@ -1,28 +1,28 @@
-from database.db import is_seen, mark_seen
-from core.filters import is_valid_listing
+from core.filters import is_valid_srx
 
 
 def analyze_listings(listings):
     alerts = []
+    seen = set()
 
     for item in listings:
+        title = (item.get("title") or "").lower()
         url = item.get("url")
 
         if not url:
             continue
 
-        if is_seen(url):
+        # 🔴 DEDUPLICATION
+        if url in seen:
             continue
+        seen.add(url)
 
-        text = item.get("title", "") + " " + url
-
-        if not is_valid_listing(text):
+        # 🔴 TWARDY SRX FILTER (to brakowało!)
+        if not is_valid_srx(title):
             continue
-
-        mark_seen(url)
 
         alerts.append(
-            f"🚗 MATCH\n{item.get('title')}\n{item.get('price')}\n{url}"
+            f"🚗 SRX ALERT\n{item.get('title')}\n{item.get('url')}"
         )
 
     return alerts
