@@ -7,20 +7,20 @@ def extract_year(text: str):
 
 
 # ========================
-# SRX (2004–2009)
+# SRX — tylko SRX jako model
 # ========================
 def is_valid_srx(text: str):
     text = (text or "").lower()
 
-    blacklist = [
-        "2010", "2011", "2012", "2013", "2014", "2015", "2016",
-        "3.0",
-        "3.6"
-    ]
-
-    if any(x in text for x in blacklist):
+    # 🔥 musi być dokładnie "srx" jako słowo
+    if not re.search(r"\bsrx\b", text):
         return False
 
+    # 🔥 SRX II OUT
+    if any(x in text for x in ["2010", "2011", "2012", "2013", "2014", "2015", "2016"]):
+        return False
+
+    # 🔥 SRX I pewniak
     if "4.6" in text:
         return True
 
@@ -29,35 +29,24 @@ def is_valid_srx(text: str):
     if year:
         return 2004 <= year <= 2009
 
-    return False
+    return True
 
 
 # ========================
-# HONDA ELEMENT
+# HONDA ELEMENT — dokładna fraza
 # ========================
 def is_valid_element(text: str):
     text = (text or "").lower()
 
-    if "element" not in text:
-        return False
-
-    if "honda" not in text:
-        return False
-
-    blacklist = [
-        "diesel",
-        "2.2",
-        "cdti"
-    ]
-
-    if any(x in text for x in blacklist):
+    # 🔥 musi być dokładnie "honda element"
+    if "honda element" not in text:
         return False
 
     return True
 
 
 # ========================
-# GLOBAL FILTER
+# GLOBAL
 # ========================
 def is_valid_listing(text: str):
     return (
