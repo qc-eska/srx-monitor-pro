@@ -23,17 +23,21 @@ def analyze_listings(listings):
             continue
 
         title = item.get("title", "")
-        text = title + " " + url
+        text = (title + " " + url).lower()
 
-        # 🔥 szybki filtr (jak wcześniej)
+        # 🔥 HARD BLOCK — SRX II (2010+)
+        if "srx" in text:
+            if any(x in text for x in ["2010", "2011", "2012", "2013", "2014", "2015", "2016"]):
+                continue
+
+        # 🔥 standardowy filtr
         if not is_valid_listing(text):
             continue
 
-        # 🔥 DODATKOWY CHECK TYLKO DLA SRX
-        if "srx" in text.lower():
+        # 🔥 dokładny check (tylko SRX)
+        if "srx" in text:
             year = fetch_listing_year(url)
 
-            # jeśli znaleziony rok i poza zakresem → odrzucamy
             if year and (year < 2004 or year > 2009):
                 continue
 
