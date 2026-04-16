@@ -1,28 +1,38 @@
-from core.filters import is_valid_srx
+from database.db import is_seen, mark_seen
+from core.filters import is_valid_listing
+
+
+def normalize_url(url):
+    if not url:
+        return url
+
+    # usuwa parametry typu ?utm=...
+    return url.split("?")[0]
 
 
 def analyze_listings(listings):
     alerts = []
-    seen = set()
 
     for item in listings:
-        title = (item.get("title") or "").lower()
-        url = item.get("url")
+        raw_url = item.get("url")
 
-        if not url:
+        if not raw_url:
             continue
 
-        # 🔴 DEDUPLICATION
-        if url in seen:
-            continue
-        seen.add(url)
+        url = normalize_url(raw_url)
 
-        # 🔴 TWARDY SRX FILTER (to brakowało!)
-        if not is_valid_srx(title):
+        if is_seen(url):
             continue
+
+        text = item.get("title", "") + " " + url
+
+        if not is_valid_listing(text):
+            continue
+
+        mark_seen(url)
 
         alerts.append(
-            f"🚗 SRX ALERT\n{item.get('title')}\n{item.get('url')}"
+            f"🚗 MATCH\n{item.get('title')}\n{item.get('price')}\n{url}"
         )
 
     return alerts
