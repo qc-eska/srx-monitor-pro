@@ -1,3 +1,4 @@
+FORCE_RESEND_ONCE = True
 from scrapers.olx import fetch_olx
 from scrapers.otomoto import fetch_otomoto
 from scrapers.autoplac import fetch_autoplac
@@ -22,10 +23,32 @@ def run():
 
             print("TOTAL:", len(listings))
 
-            alerts = analyze_listings(listings)
+           global FORCE_RESEND_ONCE
 
-            for alert in alerts:
-                send_message(alert)
+if FORCE_RESEND_ONCE:
+    print("🔥 FORCE RESEND ACTIVE")
+
+    for item in listings:
+        url = item.get("url")
+
+        if not url:
+            continue
+
+        send_alert(
+            f"🔁 RESEND\n{item.get('title')}\n{item.get('price')}\n{url}"
+        )
+
+        # 🔥 oznacz jako seen żeby nie wróciło
+        from database.db import mark_seen
+        mark_seen(url)
+
+    FORCE_RESEND_ONCE = False
+
+else:
+    alerts = analyze_listings(listings)
+
+    for alert in alerts:
+        send_alert(alert)
 
             print(f"Scan done: {len(listings)} listings")
 
