@@ -20,6 +20,10 @@ def fetch_autoplac():
             href = item.get("href", "")
             text = item.get_text(" ", strip=True)
 
+            # 🔥 filtr ogłoszeń
+            if "/oferta/" not in href:
+                continue
+
             if href and text:
                 listings.append({
                     "title": text,
