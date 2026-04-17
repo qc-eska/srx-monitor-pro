@@ -6,6 +6,29 @@ def extract_year(text: str):
     return int(match.group(1)) if match else None
 
 
+PREFERRED_SRX_MARKERS = [
+    "4.6",
+    "4,6",
+    "v8",
+    "northstar",
+]
+
+GEN2_SRX_MARKERS = [
+    "2010",
+    "2011",
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "ii gen",
+    "2 gen",
+    "second gen",
+    "second generation",
+    "2010+",
+]
+
+
 # ========================
 # SRX — tylko SRX jako model
 # ========================
@@ -17,11 +40,18 @@ def is_valid_srx(text: str):
         return False
 
     # 🔥 SRX II OUT
-    if any(x in text for x in ["2010", "2011", "2012", "2013", "2014", "2015", "2016"]):
+    if any(marker in text for marker in GEN2_SRX_MARKERS):
         return False
 
-    # 🔥 SRX I pewniak
-    if "4.6" in text:
+    # 🔥 SRX I V8 / 4.6 — najwyzszy priorytet
+    if any(marker in text for marker in PREFERRED_SRX_MARKERS):
+        return True
+
+    # 🔥 3.6 przepuszczamy, ale tylko dla SRX I
+    if "3.6" in text or "3,6" in text:
+        year = extract_year(text)
+        if year:
+            return 2004 <= year <= 2009
         return True
 
     year = extract_year(text)
@@ -29,7 +59,8 @@ def is_valid_srx(text: str):
     if year:
         return 2004 <= year <= 2009
 
-    return True
+    # 🔥 bez rocznika i bez oznaczen silnika wolimy byc ostrozni
+    return False
 
 
 # ========================

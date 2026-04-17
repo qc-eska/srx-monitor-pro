@@ -9,6 +9,17 @@ def normalize_url(url):
     return url.split("?")[0]
 
 
+def build_srx_alert(title, price, url):
+    text = f"{title} {url}".lower()
+
+    if any(marker in text for marker in ["4.6", "4,6", "v8", "northstar"]):
+        prefix = "🚗 SRX V8 PRIORYTET"
+    else:
+        prefix = "🚗 MATCH"
+
+    return f"{prefix}\n{title}\n{price}\n{url}"
+
+
 def analyze_listings(listings):
     alerts = []
 
@@ -43,8 +54,6 @@ def analyze_listings(listings):
 
         mark_seen(url)
 
-        alerts.append(
-            f"🚗 MATCH\n{title}\n{item.get('price')}\n{url}"
-        )
+        alerts.append(build_srx_alert(title, item.get("price"), url))
 
     return alerts
