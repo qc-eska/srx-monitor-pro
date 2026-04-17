@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
+from config import REQUEST_TIMEOUT
+
 base_urls = [
     "https://www.olx.pl/motoryzacja/samochody/q-cadillac-srx/",
     "https://www.olx.pl/motoryzacja/samochody/q-honda-element/"
@@ -19,7 +21,13 @@ def fetch_olx():
         for page in range(1, 4):
             url = f"{base}?page={page}"
 
-            r = requests.get(url, headers=headers)
+            try:
+                r = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
+                r.raise_for_status()
+            except requests.RequestException as exc:
+                print(f"OLX fetch failed for {url}: {exc}")
+                continue
+
             soup = BeautifulSoup(r.text, "lxml")
 
             # 🔥 łapiemy wszystkie linki do ogłoszeń

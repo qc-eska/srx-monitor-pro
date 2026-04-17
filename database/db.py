@@ -1,6 +1,13 @@
 import sqlite3
+from pathlib import Path
 
-conn = sqlite3.connect("srx.db", check_same_thread=False)
+from config import SEEN_DB_PATH
+
+
+db_path = Path(SEEN_DB_PATH)
+db_path.parent.mkdir(parents=True, exist_ok=True)
+
+conn = sqlite3.connect(db_path, check_same_thread=False)
 cursor = conn.cursor()
 
 cursor.execute("""

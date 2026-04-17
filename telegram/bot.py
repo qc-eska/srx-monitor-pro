@@ -1,8 +1,7 @@
 import requests
-import os
+from config import TELEGRAM_TOKEN, CHAT_ID, REQUEST_TIMEOUT
 
-TOKEN = os.getenv("TELEGRAM_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+TOKEN = TELEGRAM_TOKEN
 
 BASE_URL = f"https://api.telegram.org/bot{TOKEN}"
 
@@ -14,7 +13,15 @@ def send_message(text):
 
     url = f"{BASE_URL}/sendMessage"
 
-    requests.post(url, json={
-        "chat_id": CHAT_ID,
-        "text": text
-    })
+    try:
+        response = requests.post(
+            url,
+            json={
+                "chat_id": CHAT_ID,
+                "text": text,
+            },
+            timeout=REQUEST_TIMEOUT,
+        )
+        response.raise_for_status()
+    except requests.RequestException as exc:
+        print(f"Telegram send failed: {exc}")

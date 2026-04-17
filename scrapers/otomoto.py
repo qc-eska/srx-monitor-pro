@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 
+from config import REQUEST_TIMEOUT
+
 urls = [
     "https://www.otomoto.pl/osobowe/cadillac/srx/",
     "https://www.otomoto.pl/osobowe/honda/element/"
@@ -15,7 +17,13 @@ def fetch_otomoto():
     listings = []
 
     for URL in urls:
-        r = requests.get(URL, headers=headers)
+        try:
+            r = requests.get(URL, headers=headers, timeout=REQUEST_TIMEOUT)
+            r.raise_for_status()
+        except requests.RequestException as exc:
+            print(f"Otomoto fetch failed for {URL}: {exc}")
+            continue
+
         soup = BeautifulSoup(r.text, "lxml")
 
         for item in soup.select("article"):

@@ -7,6 +7,7 @@ from scrapers.sprzedajemy import fetch_sprzedajemy
 from core.analyzer import analyze_listings
 from telegram.bot import send_message
 from database.db import mark_seen
+from config import CHECK_INTERVAL
 import time
 
 
@@ -57,7 +58,7 @@ def run():
             print("ERROR:", e)
             send_message(f"⚠️ Błąd: {e}")
 
-        time.sleep(1800)
+        time.sleep(CHECK_INTERVAL)
 
 
 if __name__ == "__main__":

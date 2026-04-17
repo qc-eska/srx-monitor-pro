@@ -2,6 +2,8 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
+from config import REQUEST_TIMEOUT
+
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0"
@@ -19,9 +21,8 @@ def fetch_listing_year(url: str):
     Zwraca int lub None.
     """
     try:
-        r = requests.get(url, headers=HEADERS, timeout=10)
-        if r.status_code != 200:
-            return None
+        r = requests.get(url, headers=HEADERS, timeout=REQUEST_TIMEOUT)
+        r.raise_for_status()
 
         soup = BeautifulSoup(r.text, "lxml")
 
@@ -39,5 +40,5 @@ def fetch_listing_year(url: str):
         full_text = soup.get_text(" ", strip=True)
         return extract_year_from_text(full_text)
 
-    except Exception:
+    except requests.RequestException:
         return None
