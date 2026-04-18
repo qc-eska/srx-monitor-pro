@@ -45,11 +45,16 @@ def analyze_listings(listings):
         if not is_valid_listing(text):
             continue
 
-        # 🔥 dokładny check (tylko SRX)
+        # Dla SRX działamy fail-closed:
+        # alert wysyłamy tylko wtedy, gdy rocznik z tekstu lub z podstrony
+        # potwierdza zakres SRX I (2004-2009).
         if "srx" in text:
             year = fetch_listing_year(url)
 
-            if year and (year < 2004 or year > 2009):
+            if year is None:
+                continue
+
+            if year < 2004 or year > 2009:
                 continue
 
         mark_seen(url)
