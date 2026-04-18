@@ -1,11 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 from config import REQUEST_TIMEOUT
 
 urls = [
-    "https://autoplac.pl/szukaj/cadillac/srx",
-    "https://autoplac.pl/szukaj/honda/element"
+    "https://autoplac.pl/oferty/samochody-osobowe/cadillac/srx",
+    "https://autoplac.pl/oferty/samochody-osobowe/honda/element",
 ]
 
 BASE_URL = "https://autoplac.pl/"
@@ -20,9 +21,14 @@ HEADERS = {
         "image/avif,image/webp,image/apng,*/*;q=0.8"
     ),
     "Accept-Language": "pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Referer": BASE_URL,
     "Cache-Control": "no-cache",
     "Pragma": "no-cache",
     "Upgrade-Insecure-Requests": "1",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-User": "?1",
 }
 
 
@@ -34,8 +40,14 @@ def fetch_with_session(session, url):
 
 def fetch_autoplac():
     listings = []
+    seen_links = set()
     session = requests.Session()
     session.headers.update(HEADERS)
+
+    try:
+        session.get(BASE_URL, timeout=REQUEST_TIMEOUT, allow_redirects=True)
+    except requests.RequestException:
+        pass
 
     for URL in urls:
         try:
@@ -56,7 +68,7 @@ def fetch_autoplac():
 
         soup = BeautifulSoup(r.text, "lxml")
 
-        for item in soup.select("a"):
+        for item in soup.select("a[href]"):
             href = item.get("href", "")
             text = item.get_text(" ", strip=True)
 
@@ -64,11 +76,16 @@ def fetch_autoplac():
             if "/oferta/" not in href:
                 continue
 
-            if href and text:
-                listings.append({
-                    "title": text,
-                    "price": "brak",
-                    "url": href,
-                })
+            full_url = urljoin(BASE_URL, href.split("?")[0])
+
+            if full_url in seen_links or not text:
+                continue
+
+            seen_links.add(full_url)
+            listings.append({
+                "title": text,
+                "price": "brak",
+                "url": full_url,
+            })
 
     return listings
