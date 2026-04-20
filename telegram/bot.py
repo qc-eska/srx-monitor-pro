@@ -9,7 +9,7 @@ BASE_URL = f"https://api.telegram.org/bot{TOKEN}"
 def send_message(text):
     if not TOKEN or not CHAT_ID:
         print("Missing TELEGRAM_TOKEN or CHAT_ID")
-        return
+        return False
 
     url = f"{BASE_URL}/sendMessage"
 
@@ -23,5 +23,7 @@ def send_message(text):
             timeout=REQUEST_TIMEOUT,
         )
         response.raise_for_status()
+        return True
     except requests.RequestException as exc:
         print(f"Telegram send failed: {exc}")
+        return False

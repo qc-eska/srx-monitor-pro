@@ -16,7 +16,7 @@ bs4_module = types.ModuleType("bs4")
 bs4_module.BeautifulSoup = object
 sys.modules.setdefault("bs4", bs4_module)
 
-from core.analyzer import analyze_listings
+from core.analyzer import analyze_listings, scan_listings
 
 
 class AnalyzeListingsTests(unittest.TestCase):
@@ -54,6 +54,25 @@ class AnalyzeListingsTests(unittest.TestCase):
         self.assertEqual(len(alerts), 1)
         self.assertIn("MATCH", alerts[0])
         mark_seen.assert_called_once_with("https://example.com/srx-2008")
+
+    @patch("core.analyzer.mark_seen")
+    @patch("core.analyzer.is_seen", return_value=True)
+    @patch("core.analyzer.fetch_listing_year", return_value=2008)
+    def test_scan_listings_counts_seen_matches_as_active(self, _fetch_year, _is_seen, mark_seen):
+        listings = [
+            {
+                "title": "Cadillac SRX 3.6 V6 AWD",
+                "price": "29 900 PLN",
+                "url": "https://example.com/srx-2008?ref=abc",
+            }
+        ]
+
+        result = scan_listings(listings)
+
+        self.assertEqual(result["matching_count"], 1)
+        self.assertEqual(result["new_alerts_count"], 0)
+        self.assertEqual(result["alerts"], [])
+        mark_seen.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -4,7 +4,8 @@ from scrapers.olx import fetch_olx
 from scrapers.otomoto import fetch_otomoto
 from scrapers.autoplac import fetch_autoplac
 from scrapers.sprzedajemy import fetch_sprzedajemy
-from core.analyzer import analyze_listings
+from core.analyzer import scan_listings
+from core.status import build_status_message, mark_status_sent, should_send_status
 from telegram.bot import send_message
 from database.db import mark_seen
 from config import CHECK_INTERVAL
@@ -47,10 +48,29 @@ def run():
                 FORCE_RESEND_ONCE = False
 
             else:
-                alerts = analyze_listings(listings)
+                scan_result = scan_listings(listings)
+                alerts = scan_result["alerts"]
 
                 for alert in alerts:
                     send_message(alert)
+
+                print(
+                    "Scan summary:",
+                    f"scanned={len(listings)}",
+                    f"active_matches={scan_result['matching_count']}",
+                    f"new_alerts={scan_result['new_alerts_count']}",
+                )
+
+                if should_send_status():
+                    sent = send_message(
+                        build_status_message(
+                            active_matches=scan_result["matching_count"],
+                            scanned_count=len(listings),
+                            new_alerts_count=scan_result["new_alerts_count"],
+                        )
+                    )
+                    if sent:
+                        mark_status_sent()
 
             print(f"Scan done: {len(listings)} listings")
 

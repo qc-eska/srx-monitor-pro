@@ -9,6 +9,10 @@ Bot monitoruje nowe ogloszenia z kilku serwisow i wysyla dopasowania na Telegram
 - `CHECK_INTERVAL` - odstep miedzy kolejnymi skanami w sekundach, domyslnie `1800`
 - `REQUEST_TIMEOUT` - timeout zapytan HTTP w sekundach, domyslnie `15`
 - `SEEN_DB_PATH` - sciezka do pliku SQLite z juz widzianymi ogloszeniami
+- `STATUS_INTERVAL_HOURS` - co ile godzin wysylac status na Telegram, domyslnie `4`
+- `STATUS_START_HOUR` - od ktorej godziny zaczynac okna statusowe, domyslnie `7`
+- `STATUS_END_HOUR` - do ktorej godziny wlacznie wysylac status, domyslnie `23`
+- `APP_TIMEZONE` - strefa czasowa dla statusow, domyslnie `Europe/Warsaw`
 
 ## Railway
 

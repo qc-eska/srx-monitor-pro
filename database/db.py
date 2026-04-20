@@ -16,6 +16,13 @@ CREATE TABLE IF NOT EXISTS seen (
 )
 """)
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS meta (
+    key TEXT PRIMARY KEY,
+    value TEXT
+)
+""")
+
 conn.commit()
 
 
@@ -26,4 +33,19 @@ def is_seen(url):
 
 def mark_seen(url):
     cursor.execute("INSERT OR IGNORE INTO seen VALUES (?)", (url,))
+    conn.commit()
+
+
+def get_meta(key):
+    cursor.execute("SELECT value FROM meta WHERE key=?", (key,))
+    row = cursor.fetchone()
+    return row[0] if row else None
+
+
+def set_meta(key, value):
+    cursor.execute(
+        "INSERT INTO meta(key, value) VALUES (?, ?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        (key, value),
+    )
     conn.commit()
